@@ -1,339 +1,305 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
+
+class Customer {
+    String name;
+    String gender;
+    String address;
+    double saldo;
+    List<Order> orders;
+
+    public Customer(String name, String gender, String address) {
+        this.name = name;
+        this.gender = gender;
+        this.address = address;
+        this.saldo = 0;
+        this.orders = new ArrayList<>();
+    }
+}
 
 class Menu {
-    private String nama;
-    private double harga;
+    String itemName;
+    double price;
+    String code;
 
-    public Menu(String nama, double harga) {
-        this.nama = nama;
-        this.harga = harga;
-    }
-
-    public String getNama() {
-        return nama;
-    }
-
-    public double getHarga() {
-        return harga;
-    }
-
-    @Override
-    public String toString() {
-        return "Nama: " + nama + ", Harga: " + harga;
+    public Menu(String itemName, double price, String code) {
+        this.itemName = itemName;
+        this.price = price;
+        this.code = code;
     }
 }
 
-class Pelanggan {
-    private String nama;
-    private String alamat;
-    private String nomorTelepon;
-    private double saldo;
-    private List<Menu> pesanan;
+class Order {
+    Menu menu;
+    int quantity;
 
-    public Pelanggan(String nama, String alamat, String nomorTelepon) {
-        this.nama = nama;
-        this.alamat = alamat;
-        this.nomorTelepon = nomorTelepon;
-        this.saldo = 0;
-        this.pesanan = new ArrayList<>();
-    }
-
-    public String getNama() {
-        return nama;
-    }
-
-    public void setNama(String nama) {
-        this.nama = nama;
-    }
-
-    public String getAlamat() {
-        return alamat;
-    }
-
-     public void setAlamat(String alamat) {
-        this.alamat = alamat;
-    }
-
-    public String getNomorTelepon() {
-        return nomorTelepon;
-    }
-
-    public void setNomorTelepon(String nomorTelepon) {
-        this.nomorTelepon = nomorTelepon;
-    }
-
-    public void perbaruiData(Pelanggan pelangganBaru) {
-        this.nama = pelangganBaru.getNama();
-        this.alamat = pelangganBaru.getAlamat();
-        this.nomorTelepon = pelangganBaru.getNomorTelepon();
-        System.out.println("Data pelanggan berhasil diperbarui.");
-    }
-
-    
-
-    public double getSaldo() {
-        return saldo;
-    }
-
-    public void setSaldo(double saldo) {
-        this.saldo = saldo;
-    }
-
-    //@Override
-    //public String toString() {
-    //    return "Nama: " + nama + ", Alamat: " + alamat + ", Nomor Telepon: " + nomorTelepon;
-    //}
-
-    public void topUpSaldo(double jumlah) {
-        saldo += jumlah;
-        System.out.println("Top up berhasil. Saldo sekarang: " + saldo);
-    }
-
-    public void pesan(Menu menu) {
-        pesanan.add(menu);
-        System.out.println("Pesanan ditambahkan: " + menu.getNama());
-    }
-
-    public void bayar() {
-        double totalHarga = hitungTotalHarga();
-        if (saldo >= totalHarga) {
-            saldo -= totalHarga;
-            System.out.println("Pembayaran berhasil. Sisa saldo: " + saldo);
-            tampilkanInvoice();
-            pesanan.clear();
-        } else {
-            System.out.println("Saldo tidak mencukupi untuk pembayaran.");
-        }
-    }
-
-    private double hitungTotalHarga() {
-        double totalHarga = 0;
-        for (Menu menu : pesanan) {
-            totalHarga += menu.getHarga();
-        }
-        return totalHarga;
-    }
-
-    private void tampilkanInvoice() {
-        System.out.println("Invoice:");
-        for (Menu menu : pesanan) {
-            System.out.println(menu);
-        }
-        System.out.println("Total Harga: " + hitungTotalHarga());
-    }
-
-    @Override
-    public String toString() {
-        return "Nama: " + nama + ", Alamat: " + alamat + ", Nomor Telepon: " + nomorTelepon + ", Saldo: " + saldo;
+    public Order(Menu menu, int quantity) {
+        this.menu = menu;
+        this.quantity = quantity;
     }
 }
 
-class ManajemenPelanggan {
-    private List<Pelanggan> daftarPelanggan;
-    private Scanner scanner; 
-    
+public class RestaurantApp {
+    static Scanner scanner = new Scanner(System.in);
+    static List<Customer> customers = new ArrayList<>();
+    static List<Menu> menus = new ArrayList<>();
 
-    public ManajemenPelanggan(List<Pelanggan> daftarPelanggan) {
-        this.daftarPelanggan = daftarPelanggan;
-    }
+    public static void main(String[] args) {
+        initializeMenus();
 
+        while (true) {
+            System.out.println("1. Login as a customer");
+            System.out.println("2. Login as an admin");
+            System.out.println("3. Stop program");
+            System.out.print("Insert your role (1/2/3): ");
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume the newline character
 
-
-    public void tambahPelanggan(Pelanggan pelanggan) {
-        daftarPelanggan.add(pelanggan);
-    }
-
-    public Pelanggan cariPelanggan(String nama) {
-        for (Pelanggan pelanggan : daftarPelanggan) {
-            if (pelanggan.getNama().equals(nama)) {
-                return pelanggan;
+            switch (choice) {
+                case 1:
+                    loginAsCustomer();
+                    break;
+                case 2:
+                    loginAsAdmin();
+                    break;
+                case 3:
+                    stopProgram();
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please enter 1, 2, or 3.");
             }
         }
-        return null;
     }
 
-    public List<Pelanggan> getDaftarPelanggan() {
-        return daftarPelanggan;
-    }
+    private static void loginAsCustomer() {
+        System.out.print("Enter your name: ");
+        String name = scanner.nextLine();
+        System.out.print("Enter your gender: ");
+        String gender = scanner.nextLine();
+        System.out.print("Enter your address: ");
+        String address = scanner.nextLine();
 
-   public void perbaruiPelanggan(String namaToUpdate, Pelanggan pelangganBaruData) {
-        Pelanggan pelangganToUpdate = cariPelanggan(namaToUpdate);
+        Customer customer = new Customer(name, gender, address);
+        customers.add(customer);
 
-        if (pelangganToUpdate != null) {
-            pelangganToUpdate.perbaruiData(pelangganBaruData);
-            System.out.println("Pelanggan berhasil diperbarui.");
-        } else {
-            System.out.println("Pelanggan tidak ditemukan.");
+        System.out.println("Hello " + name + ", welcome to Edbert's Kitchen!!");
+        while (true) {
+            System.out.println("1. Show restaurant menu");
+            System.out.println("2. Add balance");
+            System.out.println("3. Place an order");
+            System.out.println("4. Back to the main menu");
+            System.out.print("Choose an option (1/2/3/4): ");
+            int option = scanner.nextInt();
+            scanner.nextLine(); // Consume the newline character
+
+            switch (option) {
+                case 1:
+                    showMenu();
+                    break;
+                case 2:
+                    addBalance(customer);
+                    break;
+                case 3:
+                    placeOrder(customer);
+                    break;
+                case 4:
+                    return;
+                default:
+                    System.out.println("Invalid option. Please enter 1, 2, 3, or 4.");
+            }
         }
     }
 
-    
-
-    public void hapusPelanggan(String nama) {
-        daftarPelanggan.removeIf(pelanggan -> pelanggan.getNama().equals(nama));
+    private static void showMenu() {
+        System.out.println("=================================================");
+        System.out.printf("| %-2s| %-25s| %-19s| %-5s|\n", "No", "Nama Makanan/Minuman", "Harga", "Kode");
+        System.out.println("=================================================");
+        int number = 1;
+        for (Menu menu : menus) {
+            System.out.printf("| %-2d| %-25s| %-19s| %-5s|\n", number, menu.itemName, "Rp. " + menu.price, menu.code);
+            number++;
+        }
+        System.out.println("=================================================");
     }
 
-   
-    // Metode lainnya sesuai kebutuhan
-}
-
-class ManajemenKatalog {
-    private List<Menu> daftarMenu;
-
-    public ManajemenKatalog() {
-        daftarMenu = new ArrayList<>();
-        inisialisasiMenu();
+    private static void addBalance(Customer customer) {
+        System.out.println("Your current balance: Rp. " + customer.saldo);
+        System.out.print("Enter the amount to add: Rp. ");
+        double amount = scanner.nextDouble();
+        customer.saldo += amount;
+        System.out.println("Your balance after adding: Rp. " + customer.saldo);
     }
 
-    private void inisialisasiMenu() {
-        tambahMenu(new Menu("Nasi Goreng", 15000));
-        tambahMenu(new Menu("Ayam Bakar", 25000));
-        tambahMenu(new Menu("Es Teh", 5000));
-        tambahMenu(new Menu("Jus Alpukat", 10000));
+    private static void placeOrder(Customer customer) {
+        showMenu();
+        System.out.print("Enter the food/drink code to order: ");
+        String orderCode = scanner.next();
+        Menu selectedMenu = findMenuByCode(orderCode);
+
+        if (selectedMenu == null) {
+            System.out.println("Invalid menu code. Please try again.");
+            return;
+        }
+
+        System.out.print("Enter the quantity: ");
+        int quantity = scanner.nextInt();
+
+        double totalCost = selectedMenu.price * quantity;
+
+        if (totalCost > customer.saldo) {
+            System.out.println("Insufficient balance. Please add more balance.");
+        } else {
+            customer.orders.add(new Order(selectedMenu, quantity));
+            customer.saldo -= totalCost;
+            System.out.println("Order placed successfully. Remaining balance: Rp. " + customer.saldo);
+        }
     }
 
-    public void tambahMenu(Menu menu) {
-        daftarMenu.add(menu);
-    }
-
-    public Menu cariMenu(String nama) {
-        for (Menu menu : daftarMenu) {
-            if (menu.getNama().equals(nama)) {
+    private static Menu findMenuByCode(String code) {
+        for (Menu menu : menus) {
+            if (menu.code.equals(code)) {
                 return menu;
             }
         }
         return null;
     }
 
-    public void tampilkanKatalog() {
-        System.out.println("Katalog Makanan & Minuman:");
-        for (Menu menu : daftarMenu) {
-            System.out.println(menu);
-        }
-    }
-}
-
-public class aoljava {
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        List<Pelanggan> daftarPelanggan = new ArrayList<>();
-        ManajemenPelanggan manajemenPelanggan = new ManajemenPelanggan(daftarPelanggan);
-        ManajemenKatalog manajemenKatalog = new ManajemenKatalog();
-
-
+    private static void loginAsAdmin() {
+        System.out.println("Hello mas admin, welcome to restaurant's setting:");
         while (true) {
-            System.out.println("1. Tambah Pelanggan");
-            System.out.println("2. Perbarui Pelanggan");
-            System.out.println("3. Hapus Pelanggan");
-            System.out.println("4. Tampilkan Semua Pelanggan");
-            System.out.println("5. Tampilkan Katalog Makanan & Minuman");
-            System.out.println("6. Top Up Saldo");
-            System.out.println("7. Pesan Makanan/Minuman");
-            System.out.println("8. Bayar Pesanan");
-            System.out.println("0. Keluar");
-            System.out.print("Pilih operasi: ");
-            int pilihan = scanner.nextInt();
-            scanner.nextLine(); // Menangani newline
+            System.out.println("1. Edit restaurant menu");
+            System.out.println("2. View customer data");
+            System.out.println("3. Back to the main menu");
+            System.out.print("Choose an option (1/2/3): ");
+            int option = scanner.nextInt();
+            scanner.nextLine(); // Consume the newline character
 
-            switch (pilihan) {
+            switch (option) {
                 case 1:
-                    System.out.print("Nama: ");
-                    String nama = scanner.nextLine();
-                    System.out.print("Alamat: ");
-                    String alamat = scanner.nextLine();
-                    System.out.print("Nomor Telepon: ");
-                    String nomorTelepon = scanner.nextLine();
-
-                    Pelanggan pelangganBaru = new Pelanggan(nama, alamat, nomorTelepon);
-                    manajemenPelanggan.tambahPelanggan(pelangganBaru);
+                    editMenu();
                     break;
                 case 2:
-                    // Implementasi perbarui pelanggan
-                    System.out.print("Nama Pelanggan yang Akan Diperbarui: ");
-                    String namaToUpdate = scanner.nextLine();
-
-                    System.out.print("Nama Baru: ");
-                    String newNama = scanner.nextLine();
-                    System.out.print("Alamat Baru: ");
-                    String newAlamat = scanner.nextLine();
-                    System.out.print("Nomor Telepon Baru: ");
-                    String newNomorTelepon = scanner.nextLine();
-
-                    Pelanggan pelangganBaruData = new Pelanggan(newNama, newAlamat, newNomorTelepon);
-                    manajemenPelanggan.perbaruiPelanggan(namaToUpdate, pelangganBaruData);
+                    viewCustomerData();
                     break;
                 case 3:
-                    // Implementasi hapus pelanggan
-                    System.out.print("Nama Pelanggan yang Akan Dihapus: ");
-                    String namaToDelete = scanner.nextLine();
-                    manajemenPelanggan.hapusPelanggan(namaToDelete);
-                    break;
-                case 4:
-                    System.out.println("Daftar Pelanggan:");
-                    for (Pelanggan pelanggan : manajemenPelanggan.getDaftarPelanggan()) {
-                        System.out.println(pelanggan);
-                    }
-                    break;
-                case 5:
-                    manajemenKatalog.tampilkanKatalog();
-                    break;
-                case 6:
-                    // Implementasi top up saldo
-                    System.out.print("Masukkan nama pelanggan: ");
-                    String namaPelangganTopUp = scanner.nextLine();
-                    Pelanggan pelangganTopUp = manajemenPelanggan.cariPelanggan(namaPelangganTopUp);
-
-                    if (pelangganTopUp != null) {
-                        System.out.print("Masukkan jumlah saldo yang akan di-top up: ");
-                        double jumlahTopUp = scanner.nextDouble();
-                        pelangganTopUp.topUpSaldo(jumlahTopUp);
-                    } else {
-                        System.out.println("Pelanggan tidak ditemukan.");
-                    }
-                    break;
-                case 7:
-                    // Implementasi pesan makanan/minuman
-                    System.out.print("Masukkan nama pelanggan: ");
-                    String namaPelangganPesan = scanner.nextLine();
-                    Pelanggan pelangganPesan = manajemenPelanggan.cariPelanggan(namaPelangganPesan);
-
-                    if (pelangganPesan != null) {
-                        System.out.println("Katalog Makanan & Minuman:");
-                        manajemenKatalog.tampilkanKatalog();
-
-                        System.out.print("Masukkan nama menu yang dipesan: ");
-                        String namaMenu = scanner.nextLine();
-                        Menu menuPesan = manajemenKatalog.cariMenu(namaMenu);
-
-                        if (menuPesan != null) {
-                            pelangganPesan.pesan(menuPesan);
-                        } else {
-                            System.out.println("Menu tidak ditemukan.");
-                        }
-                    } else {
-                        System.out.println("Pelanggan tidak ditemukan.");
-                    }
-                    break;
-                case 8:
-                    // Implementasi bayar pesanan
-                    System.out.print("Masukkan nama pelanggan untuk pembayaran: ");
-                    String namaPelangganBayar = scanner.nextLine();
-                    Pelanggan pelangganBayar = manajemenPelanggan.cariPelanggan(namaPelangganBayar);
-
-                    if (pelangganBayar != null) {
-                        pelangganBayar.bayar();
-                    } else {
-                        System.out.println("Pelanggan tidak ditemukan.");
-                    }
-                    break;
-                case 0:
-                    System.out.println("Keluar dari Aplikasi");
-                    System.exit(0);
+                    return;
                 default:
-                    System.out.println("Pilihan tidak valid.");
+                    System.out.println("Invalid option. Please enter 1, 2, or 3.");
             }
         }
+    }
+
+    private static void editMenu() {
+        while (true) {
+            showMenu();
+            System.out.println("1. Add new menu");
+            System.out.println("2. Delete menu");
+            System.out.println("3. Back to admin menu");
+            System.out.print("Choose an option (1/2/3): ");
+            int option = scanner.nextInt();
+            scanner.nextLine(); // Consume the newline character
+
+            switch (option) {
+                case 1:
+                    addNewMenu();
+                    break;
+                case 2:
+                    deleteMenu();
+                    break;
+                case 3:
+                    return;
+                default:
+                    System.out.println("Invalid option. Please enter 1, 2, or 3.");
+            }
+        }
+    }
+
+    private static void addNewMenu() {
+        System.out.print("Enter the name of the new menu: ");
+        String itemName = scanner.nextLine();
+
+        double price = 0;
+        while (true) {
+            System.out.print("Enter the price of the new menu: Rp. ");
+            try {
+                price = Double.parseDouble(scanner.nextLine());
+                break;
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a valid number.");
+            }
+        }
+
+        String code;
+        while (true) {
+            System.out.print("Enter the code of the new menu: ");
+            code = scanner.next();
+            if (isCodeUnique(code)) {
+                break;
+            } else {
+                System.out.println("Menu with the entered code already exists. Please enter a unique code.");
+            }
+        }
+
+        Menu newMenu = new Menu(itemName, price, code);
+        menus.add(newMenu);
+
+        System.out.println("New menu added successfully!");
+    }
+
+    private static boolean isCodeUnique(String code) {
+        for (Menu menu : menus) {
+            if (menu.code.equals(code)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static void deleteMenu() {
+        System.out.print("Enter the code of the menu to delete: ");
+        String code = scanner.next();
+
+        Menu menuToDelete = findMenuByCode(code);
+
+        if (menuToDelete == null) {
+            System.out.println("Menu with code " + code + " not found.");
+        } else {
+            menus.remove(menuToDelete);
+            System.out.println("Menu deleted successfully!");
+        }
+    }
+
+    private static void viewCustomerData() {
+        System.out.println("Customer Data:");
+        for (Customer customer : customers) {
+            System.out.println("Name: " + customer.name);
+            System.out.println("Gender: " + customer.gender);
+            System.out.println("Address: " + customer.address);
+
+            if (!customer.orders.isEmpty()) {
+                System.out.println("Orders:");
+                for (Order order : customer.orders) {
+                    System.out.println("- " + order.quantity + "x " + order.menu.itemName + " (Rp. " + order.menu.price + " each)");
+                }
+            } else {
+                System.out.println("No orders placed by this customer.");
+            }
+
+            System.out.println("Remaining Balance: Rp. " + customer.saldo);
+            System.out.println("========================================");
+        }
+    }
+
+    private static void stopProgram() {
+        customers.clear();
+        menus.clear();
+        System.out.println("Program stopped. All data has been deleted.");
+        System.exit(0);
+    }
+
+    private static void initializeMenus() {
+        menus.add(new Menu("Ayam goreng", 10000, "001"));
+        menus.add(new Menu("Pizza", 12000, "003"));
+        menus.add(new Menu("Steak", 15000, "004"));
+        menus.add(new Menu("Spagetti", 16000, "002"));
     }
 }
