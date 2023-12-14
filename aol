@@ -1,0 +1,339 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+class Menu {
+    private String nama;
+    private double harga;
+
+    public Menu(String nama, double harga) {
+        this.nama = nama;
+        this.harga = harga;
+    }
+
+    public String getNama() {
+        return nama;
+    }
+
+    public double getHarga() {
+        return harga;
+    }
+
+    @Override
+    public String toString() {
+        return "Nama: " + nama + ", Harga: " + harga;
+    }
+}
+
+class Pelanggan {
+    private String nama;
+    private String alamat;
+    private String nomorTelepon;
+    private double saldo;
+    private List<Menu> pesanan;
+
+    public Pelanggan(String nama, String alamat, String nomorTelepon) {
+        this.nama = nama;
+        this.alamat = alamat;
+        this.nomorTelepon = nomorTelepon;
+        this.saldo = 0;
+        this.pesanan = new ArrayList<>();
+    }
+
+    public String getNama() {
+        return nama;
+    }
+
+    public void setNama(String nama) {
+        this.nama = nama;
+    }
+
+    public String getAlamat() {
+        return alamat;
+    }
+
+     public void setAlamat(String alamat) {
+        this.alamat = alamat;
+    }
+
+    public String getNomorTelepon() {
+        return nomorTelepon;
+    }
+
+    public void setNomorTelepon(String nomorTelepon) {
+        this.nomorTelepon = nomorTelepon;
+    }
+
+    public void perbaruiData(Pelanggan pelangganBaru) {
+        this.nama = pelangganBaru.getNama();
+        this.alamat = pelangganBaru.getAlamat();
+        this.nomorTelepon = pelangganBaru.getNomorTelepon();
+        System.out.println("Data pelanggan berhasil diperbarui.");
+    }
+
+    
+
+    public double getSaldo() {
+        return saldo;
+    }
+
+    public void setSaldo(double saldo) {
+        this.saldo = saldo;
+    }
+
+    //@Override
+    //public String toString() {
+    //    return "Nama: " + nama + ", Alamat: " + alamat + ", Nomor Telepon: " + nomorTelepon;
+    //}
+
+    public void topUpSaldo(double jumlah) {
+        saldo += jumlah;
+        System.out.println("Top up berhasil. Saldo sekarang: " + saldo);
+    }
+
+    public void pesan(Menu menu) {
+        pesanan.add(menu);
+        System.out.println("Pesanan ditambahkan: " + menu.getNama());
+    }
+
+    public void bayar() {
+        double totalHarga = hitungTotalHarga();
+        if (saldo >= totalHarga) {
+            saldo -= totalHarga;
+            System.out.println("Pembayaran berhasil. Sisa saldo: " + saldo);
+            tampilkanInvoice();
+            pesanan.clear();
+        } else {
+            System.out.println("Saldo tidak mencukupi untuk pembayaran.");
+        }
+    }
+
+    private double hitungTotalHarga() {
+        double totalHarga = 0;
+        for (Menu menu : pesanan) {
+            totalHarga += menu.getHarga();
+        }
+        return totalHarga;
+    }
+
+    private void tampilkanInvoice() {
+        System.out.println("Invoice:");
+        for (Menu menu : pesanan) {
+            System.out.println(menu);
+        }
+        System.out.println("Total Harga: " + hitungTotalHarga());
+    }
+
+    @Override
+    public String toString() {
+        return "Nama: " + nama + ", Alamat: " + alamat + ", Nomor Telepon: " + nomorTelepon + ", Saldo: " + saldo;
+    }
+}
+
+class ManajemenPelanggan {
+    private List<Pelanggan> daftarPelanggan;
+    private Scanner scanner; 
+    
+
+    public ManajemenPelanggan(List<Pelanggan> daftarPelanggan) {
+        this.daftarPelanggan = daftarPelanggan;
+    }
+
+
+
+    public void tambahPelanggan(Pelanggan pelanggan) {
+        daftarPelanggan.add(pelanggan);
+    }
+
+    public Pelanggan cariPelanggan(String nama) {
+        for (Pelanggan pelanggan : daftarPelanggan) {
+            if (pelanggan.getNama().equals(nama)) {
+                return pelanggan;
+            }
+        }
+        return null;
+    }
+
+    public List<Pelanggan> getDaftarPelanggan() {
+        return daftarPelanggan;
+    }
+
+   public void perbaruiPelanggan(String namaToUpdate, Pelanggan pelangganBaruData) {
+        Pelanggan pelangganToUpdate = cariPelanggan(namaToUpdate);
+
+        if (pelangganToUpdate != null) {
+            pelangganToUpdate.perbaruiData(pelangganBaruData);
+            System.out.println("Pelanggan berhasil diperbarui.");
+        } else {
+            System.out.println("Pelanggan tidak ditemukan.");
+        }
+    }
+
+    
+
+    public void hapusPelanggan(String nama) {
+        daftarPelanggan.removeIf(pelanggan -> pelanggan.getNama().equals(nama));
+    }
+
+   
+    // Metode lainnya sesuai kebutuhan
+}
+
+class ManajemenKatalog {
+    private List<Menu> daftarMenu;
+
+    public ManajemenKatalog() {
+        daftarMenu = new ArrayList<>();
+        inisialisasiMenu();
+    }
+
+    private void inisialisasiMenu() {
+        tambahMenu(new Menu("Nasi Goreng", 15000));
+        tambahMenu(new Menu("Ayam Bakar", 25000));
+        tambahMenu(new Menu("Es Teh", 5000));
+        tambahMenu(new Menu("Jus Alpukat", 10000));
+    }
+
+    public void tambahMenu(Menu menu) {
+        daftarMenu.add(menu);
+    }
+
+    public Menu cariMenu(String nama) {
+        for (Menu menu : daftarMenu) {
+            if (menu.getNama().equals(nama)) {
+                return menu;
+            }
+        }
+        return null;
+    }
+
+    public void tampilkanKatalog() {
+        System.out.println("Katalog Makanan & Minuman:");
+        for (Menu menu : daftarMenu) {
+            System.out.println(menu);
+        }
+    }
+}
+
+public class aoljava {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        List<Pelanggan> daftarPelanggan = new ArrayList<>();
+        ManajemenPelanggan manajemenPelanggan = new ManajemenPelanggan(daftarPelanggan);
+        ManajemenKatalog manajemenKatalog = new ManajemenKatalog();
+
+
+        while (true) {
+            System.out.println("1. Tambah Pelanggan");
+            System.out.println("2. Perbarui Pelanggan");
+            System.out.println("3. Hapus Pelanggan");
+            System.out.println("4. Tampilkan Semua Pelanggan");
+            System.out.println("5. Tampilkan Katalog Makanan & Minuman");
+            System.out.println("6. Top Up Saldo");
+            System.out.println("7. Pesan Makanan/Minuman");
+            System.out.println("8. Bayar Pesanan");
+            System.out.println("0. Keluar");
+            System.out.print("Pilih operasi: ");
+            int pilihan = scanner.nextInt();
+            scanner.nextLine(); // Menangani newline
+
+            switch (pilihan) {
+                case 1:
+                    System.out.print("Nama: ");
+                    String nama = scanner.nextLine();
+                    System.out.print("Alamat: ");
+                    String alamat = scanner.nextLine();
+                    System.out.print("Nomor Telepon: ");
+                    String nomorTelepon = scanner.nextLine();
+
+                    Pelanggan pelangganBaru = new Pelanggan(nama, alamat, nomorTelepon);
+                    manajemenPelanggan.tambahPelanggan(pelangganBaru);
+                    break;
+                case 2:
+                    // Implementasi perbarui pelanggan
+                    System.out.print("Nama Pelanggan yang Akan Diperbarui: ");
+                    String namaToUpdate = scanner.nextLine();
+
+                    System.out.print("Nama Baru: ");
+                    String newNama = scanner.nextLine();
+                    System.out.print("Alamat Baru: ");
+                    String newAlamat = scanner.nextLine();
+                    System.out.print("Nomor Telepon Baru: ");
+                    String newNomorTelepon = scanner.nextLine();
+
+                    Pelanggan pelangganBaruData = new Pelanggan(newNama, newAlamat, newNomorTelepon);
+                    manajemenPelanggan.perbaruiPelanggan(namaToUpdate, pelangganBaruData);
+                    break;
+                case 3:
+                    // Implementasi hapus pelanggan
+                    System.out.print("Nama Pelanggan yang Akan Dihapus: ");
+                    String namaToDelete = scanner.nextLine();
+                    manajemenPelanggan.hapusPelanggan(namaToDelete);
+                    break;
+                case 4:
+                    System.out.println("Daftar Pelanggan:");
+                    for (Pelanggan pelanggan : manajemenPelanggan.getDaftarPelanggan()) {
+                        System.out.println(pelanggan);
+                    }
+                    break;
+                case 5:
+                    manajemenKatalog.tampilkanKatalog();
+                    break;
+                case 6:
+                    // Implementasi top up saldo
+                    System.out.print("Masukkan nama pelanggan: ");
+                    String namaPelangganTopUp = scanner.nextLine();
+                    Pelanggan pelangganTopUp = manajemenPelanggan.cariPelanggan(namaPelangganTopUp);
+
+                    if (pelangganTopUp != null) {
+                        System.out.print("Masukkan jumlah saldo yang akan di-top up: ");
+                        double jumlahTopUp = scanner.nextDouble();
+                        pelangganTopUp.topUpSaldo(jumlahTopUp);
+                    } else {
+                        System.out.println("Pelanggan tidak ditemukan.");
+                    }
+                    break;
+                case 7:
+                    // Implementasi pesan makanan/minuman
+                    System.out.print("Masukkan nama pelanggan: ");
+                    String namaPelangganPesan = scanner.nextLine();
+                    Pelanggan pelangganPesan = manajemenPelanggan.cariPelanggan(namaPelangganPesan);
+
+                    if (pelangganPesan != null) {
+                        System.out.println("Katalog Makanan & Minuman:");
+                        manajemenKatalog.tampilkanKatalog();
+
+                        System.out.print("Masukkan nama menu yang dipesan: ");
+                        String namaMenu = scanner.nextLine();
+                        Menu menuPesan = manajemenKatalog.cariMenu(namaMenu);
+
+                        if (menuPesan != null) {
+                            pelangganPesan.pesan(menuPesan);
+                        } else {
+                            System.out.println("Menu tidak ditemukan.");
+                        }
+                    } else {
+                        System.out.println("Pelanggan tidak ditemukan.");
+                    }
+                    break;
+                case 8:
+                    // Implementasi bayar pesanan
+                    System.out.print("Masukkan nama pelanggan untuk pembayaran: ");
+                    String namaPelangganBayar = scanner.nextLine();
+                    Pelanggan pelangganBayar = manajemenPelanggan.cariPelanggan(namaPelangganBayar);
+
+                    if (pelangganBayar != null) {
+                        pelangganBayar.bayar();
+                    } else {
+                        System.out.println("Pelanggan tidak ditemukan.");
+                    }
+                    break;
+                case 0:
+                    System.out.println("Keluar dari Aplikasi");
+                    System.exit(0);
+                default:
+                    System.out.println("Pilihan tidak valid.");
+            }
+        }
+    }
+}
