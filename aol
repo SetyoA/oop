@@ -1,18 +1,31 @@
 import java.util.*;
 
-class Customer {
+class Person {
     String name;
     String gender;
     String address;
+
+    public Person(String name, String gender, String address) {
+        this.name = name;
+        this.gender = gender;
+        this.address = address;
+    }
+}
+
+class Customer extends Person {
     double saldo;
     List<Order> orders;
 
     public Customer(String name, String gender, String address) {
-        this.name = name;
-        this.gender = gender;
-        this.address = address;
+        super(name, gender, address);
         this.saldo = 0;
         this.orders = new ArrayList<>();
+    }
+}
+
+class Admin extends Person {
+    public Admin(String name, String gender, String address) {
+        super(name, gender, address);
     }
 }
 
@@ -42,6 +55,7 @@ public class RestaurantApp {
     static Scanner scanner = new Scanner(System.in);
     static List<Customer> customers = new ArrayList<>();
     static List<Menu> menus = new ArrayList<>();
+    static List<Admin> admins = new ArrayList<>(); // Added to store admin data
 
     public static void main(String[] args) {
         initializeMenus();
@@ -70,6 +84,16 @@ public class RestaurantApp {
         }
     }
 
+    private static boolean isNameAlreadyExists(String name) {
+            for (Customer existingCustomer : customers) {
+                if (existingCustomer.name.equals(name)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+    // Existing methods remain unchanged.
     private static void loginAsCustomer() {
         System.out.print("Enter your name: ");
         String name = scanner.nextLine();
@@ -77,6 +101,11 @@ public class RestaurantApp {
         String gender = scanner.nextLine();
         System.out.print("Enter your address: ");
         String address = scanner.nextLine();
+
+        if (isNameAlreadyExists(name)) {
+            System.out.println("Name already exists. Please enter a different name.");
+            return;
+        }
 
         Customer customer = new Customer(name, gender, address);
         customers.add(customer);
@@ -146,7 +175,15 @@ public class RestaurantApp {
         double totalCost = selectedMenu.price * quantity;
 
         if (totalCost > customer.saldo) {
-            System.out.println("Insufficient balance. Please add more balance.");
+            System.out.println("Insufficient balance. Your current balance is Rp. " + customer.saldo);
+            System.out.print("Do you want to add more balance? (yes/no): ");
+            String addBalanceChoice = scanner.next().toLowerCase();
+    
+            if (addBalanceChoice.equals("yes")) {
+                addBalance(customer);
+            } else {
+                System.out.println("Order canceled. Please add more balance to place the order.");
+            }
         } else {
             customer.orders.add(new Order(selectedMenu, quantity));
             customer.saldo -= totalCost;
@@ -298,8 +335,8 @@ public class RestaurantApp {
 
     private static void initializeMenus() {
         menus.add(new Menu("Ayam goreng", 10000, "001"));
-        menus.add(new Menu("Pizza", 12000, "003"));
-        menus.add(new Menu("Steak", 15000, "004"));
-        menus.add(new Menu("Spagetti", 16000, "002"));
+        menus.add(new Menu("Pizza", 12000, "002"));
+        menus.add(new Menu("Steak", 15000, "003"));
+        menus.add(new Menu("Spaghetti", 16000, "004"));
     }
 }
